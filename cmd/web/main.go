@@ -8,40 +8,30 @@ import (
 )
 
 type application struct {
-  errorLog *log.Logger
-  infolog *log.Logger
+	errorLog *log.Logger
+	infolog  *log.Logger
 }
 
 func main() {
-  
-  addr := flag.String("addr", ":4000", "HTTP network address")
+	addr := flag.String("addr", ":4000", "HTTP network address")
 
-  flag.Parse()
+	flag.Parse()
 
-  infolog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
-  errorLog := log.New(os.Stdin, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	infolog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stdin, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-  app := &application {
-    errorLog: errorLog,
-    infolog: infolog,
-  }
+	app := &application{
+		errorLog: errorLog,
+		infolog:  infolog,
+	}
 
-  mux := http.NewServeMux()
-  
-  fileServer := http.FileServer(http.Dir("./ui/static/"))
-  mux.Handle("/static/", http.StripPrefix("/static", fileServer))
+	srv := &http.Server{
+		Addr:     *addr,
+		ErrorLog: errorLog,
+		Handler:  app.routes(),
+	}
 
-  mux.HandleFunc("/", app.home)
-  mux.HandleFunc("/snippet/view", app.snippetView)
-  mux.HandleFunc("/snippet/create", app.snippetCreate)
-
-  srv := &http.Server{
-    Addr: *addr,
-    ErrorLog: errorLog,
-    Handler: mux,
-  }
-
-  infolog.Printf("Starting server on %s", *addr)
-  err := srv.ListenAndServe()
-  errorLog.Fatal(err)
+	infolog.Printf("Starting server on %s", *addr)
+	err := srv.ListenAndServe()
+	errorLog.Fatal(err)
 }
