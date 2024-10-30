@@ -38,7 +38,7 @@ func (m *SnippetModel) Insert(title string, content string, expires int) (int, e
 func (m *SnippetModel) Get(id int) (*Snippet, error) {
 	s := &Snippet{}
 
-	err := m.DB.QueryRow("SELECT ...", id).Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+err := m.DB.QueryRow("SELECT id, title, content, created, expires FROM snippets WHERE id = ?", id).Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNoRecord

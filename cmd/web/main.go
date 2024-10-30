@@ -3,17 +3,17 @@ package main
 import (
 	"database/sql"
 	"flag"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
 	"os"
-  "snippetbox.zjordi.net/internal/models"
-  _ "github.com/go-sql-driver/mysql"
+	"snippetbox.zjordi.net/internal/models"
 )
 
 type application struct {
 	errorLog *log.Logger
 	infolog  *log.Logger
-  snippets *models.SnippetModel
+	snippets *models.SnippetModel
 }
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infolog:  infolog,
-    snippets: &models.SnippetModel{DB: db},
+		snippets: &models.SnippetModel{DB: db},
 	}
 
 	srv := &http.Server{
